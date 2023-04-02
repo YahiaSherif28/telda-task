@@ -1,32 +1,36 @@
 package scheduler;
 
+
+import java.time.Clock;
+
 public class JobContainer implements Comparable<JobContainer>, Runnable {
     private final Job job;
     private final String identifier;
     private final long expectedTime, frequency;
     private long dueTime;
 
-    public JobContainer(Job job, String identifier, long expectedTime, long frequency) {
+    private Clock clock;
+
+    public JobContainer(Job job, String identifier, long expectedTime, long frequency, Clock clock) {
         this.job = job;
         this.identifier = identifier;
         this.expectedTime = expectedTime;
         this.frequency = frequency;
+        this.clock = clock;
+        this.dueTime = getCurrentTime() + frequency;
     }
 
-    public JobContainer(Job job, String identifier, long expectedTime, long frequency, long dueTime) {
-        this.job = job;
-        this.identifier = identifier;
-        this.expectedTime = expectedTime;
-        this.frequency = frequency;
-        this.dueTime = dueTime;
+    private long getCurrentTime() {
+        return clock.millis();
     }
+
 
     public void setDueTime() {
-        dueTime = Util.getCurrentTime() + frequency;
+        dueTime = getCurrentTime() + frequency;
     }
 
     public boolean isDue() {
-        return dueTime <= Util.getCurrentTime();
+        return dueTime <= getCurrentTime();
     }
 
     public String getIdentifier() {

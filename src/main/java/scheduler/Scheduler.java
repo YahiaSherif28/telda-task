@@ -1,20 +1,35 @@
 package scheduler;
 
+import java.time.Clock;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.TreeMap;
+
 
 public class Scheduler implements Runnable {
 
     private final TreeMap<JobContainer, Thread> jobs;
     private final HashMap<String, JobContainer> getJobByIdentifier;
 
-    public Scheduler() {
+    private final Clock clock;
+
+    public Scheduler(Clock clock) {
         this.jobs = new TreeMap<>();
         this.getJobByIdentifier = new HashMap<>();
+        this.clock = clock;
     }
+
 
     public TreeMap<JobContainer, Thread> getJobs() {
         return jobs;
+    }
+
+    public HashMap<String, JobContainer> getGetJobByIdentifier() {
+        return getJobByIdentifier;
+    }
+
+    public Clock getClock() {
+        return clock;
     }
 
     /**

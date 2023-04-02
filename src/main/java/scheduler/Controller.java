@@ -1,6 +1,7 @@
 package scheduler;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.Clock;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -10,13 +11,16 @@ public class Controller {
     Scheduler scheduler;
     Scanner scanner;
 
-    public Controller() {
-        scheduler = new Scheduler();
+    private Clock clock;
+
+    public Controller(Clock clock) {
+        this.clock = clock;
+        scheduler = new Scheduler(clock);
         scanner = new Scanner(System.in);
     }
 
     public void startJob(Job job, String identifier, long expectedTime, long frequency) {
-        JobContainer jobContainer = new JobContainer(job, identifier, expectedTime, frequency, Util.getCurrentTime() + frequency);
+        JobContainer jobContainer = new JobContainer(job, identifier, expectedTime, frequency, clock);
         scheduler.startJob(jobContainer);
     }
 
@@ -44,10 +48,6 @@ public class Controller {
      * For debugging
      */
     public void debugCommand() {
-        System.err.println(scheduler.getJobs());
-        if (!scheduler.getJobs().isEmpty()) {
-            System.err.println(scheduler.getJobs().firstKey().isDue());
-        }
     }
 
     /**
