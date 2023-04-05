@@ -48,6 +48,7 @@ public class Controller {
      * For debugging
      */
     public void debugCommand() {
+        System.out.println(scheduler.getJobs());
     }
 
     /**
@@ -100,6 +101,11 @@ public class Controller {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }

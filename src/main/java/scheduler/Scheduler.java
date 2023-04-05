@@ -11,7 +11,7 @@ public class Scheduler implements Runnable {
     private final TreeMap<JobContainer, Thread> jobs;
     private final HashMap<String, JobContainer> getJobByIdentifier;
 
-    private final Clock clock;
+    private Clock clock;
 
     public Scheduler(Clock clock) {
         this.jobs = new TreeMap<>();
@@ -30,6 +30,10 @@ public class Scheduler implements Runnable {
 
     public Clock getClock() {
         return clock;
+    }
+
+    public void setClock(Clock clock) {
+        this.clock = clock;
     }
 
     /**
@@ -56,7 +60,7 @@ public class Scheduler implements Runnable {
     public void resumeJob(String identifier) {
         JobContainer jobContainer = getJobByIdentifier.get(identifier);
         Thread thread = new Thread(jobContainer);
-        jobContainer.setDueTime();
+        jobContainer.setDueTime(clock);
         jobs.put(jobContainer, thread);
         thread.start();
     }
@@ -72,10 +76,10 @@ public class Scheduler implements Runnable {
     /**
      * Schedules the job for its next run
      */
-    private void restartJob(JobContainer jobContainer) {
+    public void restartJob(JobContainer jobContainer) {
         jobs.remove(jobContainer);
         Thread thread = new Thread(jobContainer);
-        jobContainer.setDueTime();
+        jobContainer.setDueTime(clock);
         jobs.put(jobContainer, thread);
         thread.start();
     }
@@ -84,7 +88,7 @@ public class Scheduler implements Runnable {
     @Override
     public void run() {
         while (true) {
-            if (!jobs.isEmpty() && jobs.firstKey().isDue()) {
+            if (!jobs.isEmpty() && jobs.firstKey().isDue(clock)) {
                 restartJob(jobs.firstKey());
             }
             try {

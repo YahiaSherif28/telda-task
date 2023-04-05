@@ -9,35 +9,37 @@ public class JobContainer implements Comparable<JobContainer>, Runnable {
     private final long expectedTime, frequency;
     private long dueTime;
 
-    private Clock clock;
 
     public JobContainer(Job job, String identifier, long expectedTime, long frequency, Clock clock) {
         this.job = job;
         this.identifier = identifier;
         this.expectedTime = expectedTime;
         this.frequency = frequency;
-        this.clock = clock;
-        this.dueTime = getCurrentTime() + frequency;
+        this.dueTime = getCurrentTime(clock) + frequency;
     }
 
-    private long getCurrentTime() {
+    private long getCurrentTime(Clock clock) {
         return clock.millis();
     }
 
 
-    public void setDueTime() {
-        dueTime = getCurrentTime() + frequency;
+    public void setDueTime(Clock clock) {
+        dueTime = getCurrentTime(clock) + frequency;
     }
 
-    public boolean isDue() {
-        return dueTime <= getCurrentTime();
+    public long getDueTime() {
+        return dueTime;
+    }
+
+    public boolean isDue(Clock clock) {
+        return dueTime <= getCurrentTime(clock);
     }
 
     public String getIdentifier() {
         return identifier;
     }
 
-    public double priorityScore() {
+    public long priorityScore() {
         return dueTime;
     }
 
@@ -45,7 +47,7 @@ public class JobContainer implements Comparable<JobContainer>, Runnable {
     public int compareTo(JobContainer o) {
         double prio = priorityScore();
         double otherPrio = o.priorityScore();
-        return prio == otherPrio ? Double.compare(prio, otherPrio) : identifier.compareTo(o.identifier);
+        return prio != otherPrio ? Double.compare(prio, otherPrio) : identifier.compareTo(o.identifier);
     }
 
     @Override
